@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Reminders</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #fdf6f6;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      color: #444;
+    }
+    header {
+      background: #a7c7e7;
+      color: #fff;
+      padding: 20px;
+      font-size: 24px;
+    }
+    main {
+      margin: 30px auto;
+      max-width: 500px;
+      background: #fff;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    button {
+      background: #a7c7e7;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #90b5da;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: #f9e1e1;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    nav {
+      margin-top: 20px;
+    }
+    nav a {
+      text-decoration: none;
+      margin: 0 10px;
+      color: #444;
+      background: #d7e9f7;
+      padding: 8px 14px;
+      border-radius: 8px;
+    }
+    nav a:hover {
+      background: #a7c7e7;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <header>Medicine Reminder – Add Reminders</header>
+  <main>
+    <form id="reminderForm">
+      <label for="name">Medicine Name:</label>
+      <input type="text" id="name" required>
+      
+      <label for="time">Time (24hr format):</label>
+      <input type="time" id="time" required>
+      
+      <button type="submit">Add Reminder</button>
+    </form>
+
+    <h3>Your Reminders</h3>
+    <ul id="reminderList"></ul>
+    
+    <nav>
+      <a href="index.html">🏠 Home</a>
+      <a href="summary.html">📋 Summary</a>
+    </nav>
+  </main>
+
+  <script>
+    // Ask for notification permission
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+
+    let reminders = JSON.parse(localStorage.getItem("reminders")) || [];
+
+    const form = document.getElementById("reminderForm");
+    const reminderList = document.getElementById("reminderList");
+
+    // Render saved reminders
+    function renderReminders() {
+      reminderList.innerHTML = "";
+      reminders.forEach(reminder => {
+        const li = document.createElement("li");
+        li.textContent = reminder.name + " - " + reminder.time;
+        reminderList.appendChild(li);
+      });
+    }
+    renderReminders();
+
+    // Add new reminder
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const time = document.getElementById("time").value;
+
+      const reminder = {
+        name: name,
+        time: time,
+        notified: false
+      };
+
+      reminders.push(reminder);
+      localStorage.setItem("reminders", JSON.stringify(reminders));
+      renderReminders();
+      form.reset();
+      alert("✅ Reminder added successfully!");
+    });
+
+    // Show notification
+    function showNotification(name) {
+      if (Notification.permission === "granted") {
+        new Notification("⏰ Time to take your medicine!", {
+          body: name,
+          icon: "https://cdn-icons-png.flaticon.com/512/2966/2966489.png"
+        });
+      } else {
+        alert("⏰ Time to take your medicine: " + name);
+      }
+    }
+
+    // Check reminders every second
+    function checkReminders() {
+      const now = new Date();
+      const currentTime = now.toTimeString().slice(0,5);
+
+      reminders.forEach((reminder, index) => {
+        if (reminder.time === currentTime && reminder.notified === false) {
+          showNotification(reminder.name);
+          reminders[index].notified = true;
+          localStorage.setItem("reminders", JSON.stringify(reminders));
+        }
+      });
+    }
+    setInterval(checkReminders, 1000);
+  </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reminder Summary</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: #fdf6f0;
+      margin: 0;
+      padding: 0;
+      color: #264653;
+    }
+    header {
+      background: #a8dadc;
+      padding: 20px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      border-bottom: 3px solid #f4a261;
+    }
+    main {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0px 6px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h2 {
+      color: #2a9d8f;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: #f1faee;
+      margin: 8px 0;
+      padding: 12px;
+      border-radius: 10px;
+      border-left: 6px solid #f4a261;
+    }
+    .nav {
+      margin-top: 20px;
+    }
+    .nav a {
+      text-decoration: none;
+      background: #a8dadc;
+      color: #264653;
+      padding: 10px 15px;
+      border-radius: 10px;
+      margin: 5px;
+      font-weight: bold;
+      display: inline-block;
+      transition: 0.3s;
+    }
+    .nav a:hover {
+      background: #2a9d8f;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <header>📋 Reminder Summary</header>
+  <main>
+    <h2>Total Reminders</h2>
+    <p id="totalCount">0</p>
+    <h2>All Reminders</h2>
+    <ul id="summaryList"></ul>
+    <div class="nav">
+      <a href="index.html">🏠 Home</a>
+      <a href="reminders.html">➕ Add Reminders</a>
+    </div>
+  </main>
+
+  <script>
+    let reminders = JSON.parse(localStorage.getItem('reminders')) || [];
+    document.getElementById('totalCount').innerText = reminders.length;
+
+    const summaryList = document.getElementById('summaryList');
+    reminders.forEach(reminder => {
+      const li = document.createElement('li');
+      li.textContent = reminder.name +"-"+ reminder.time;
+      summaryList.appendChild(li);
+    });
+  </script>
+  
+</body>
+</html>
